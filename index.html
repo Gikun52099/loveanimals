@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B3U5 Stop animal abuse生圖大考驗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Google Colors */
+        .g-blue { color: #4285F4; }
+        .bg-g-blue { background-color: #4285F4; }
+        .border-g-blue { border-color: #4285F4; }
+        
+        .g-red { color: #EA4335; }
+        .bg-g-red { background-color: #EA4335; }
+        .border-g-red { border-color: #EA4335; }
+        
+        .g-yellow { color: #FBBC05; }
+        .bg-g-yellow { background-color: #FBBC05; }
+        .border-g-yellow { border-color: #FBBC05; }
+        
+        .g-green { color: #34A853; }
+        .bg-g-green { background-color: #34A853; }
+        .border-g-green { border-color: #34A853; }
+
+        .google-shadow {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+        .google-shadow:hover {
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        }
+
+        /* Canvas & Editor */
+        #drawing-canvas {
+            touch-action: none; /* Prevent scrolling while drawing */
+            cursor: crosshair;
+        }
+
+        /* Frame Styles */
+        .preview-container {
+            position: relative;
+            background: white;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Different Social Media Aspects */
+        .frame-fb { aspect-ratio: 1.91/1; } /* FB Link/Post style */
+        .frame-ig { aspect-ratio: 1/1; }    /* IG Square */
+        .frame-threads { aspect-ratio: 3/4; } /* Threads Portrait */
+
+        /* Decorative Elements Positioning */
+        .decor-top-left {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 80px;
+            height: 80px;
+            z-index: 20;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+        }
+        .decor-bottom-right {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 80px;
+            height: 80px;
+            z-index: 20;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+        }
+
+        /* Text Overlays */
+        .overlay-text {
+            position: absolute;
+            z-index: 10;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            font-weight: bold;
+            font-size: 1.5rem;
+            pointer-events: none;
+            width: 90%;
+            left: 5%;
+            text-align: center;
+            word-wrap: break-word;
+            transition: all 0.3s ease;
+        }
+
+        /* Text Positioning Classes */
+        .overlay-text[data-position="top"] {
+            top: 10%;
+            bottom: auto;
+            transform: none;
+        }
+        .overlay-text[data-position="center"] {
+            top: 50%;
+            bottom: auto;
+            transform: translateY(-50%);
+        }
+        .overlay-text[data-position="bottom"] {
+            top: auto;
+            bottom: 10%;
+            transform: none;
+        }
+
+        .hashtag-sticker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #34A853; /* Green for nature/animals */
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 30;
+            font-size: 0.9rem;
+            border: 2px solid #EA4335;
+            box-shadow: 2px 2px 0px #FBBC05;
+        }
+
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">
+            <span class="g-blue">B</span><span class="g-red">3</span><span class="g-yellow">U</span><span class="g-green">5</span> 
+            <span class="text-gray-800">Stop animal abuse</span>
+            <span class="text-gray-600 block text-2xl mt-1">生圖大考驗</span>
+        </h1>
+        <p class="text-gray-500 text-sm">Upload, Speak Up, Save Animals!</p>
+    </header>
+
+    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Left Column: Controls & Input -->
+        <div class="space-y-6">
+            
+            <!-- 1. Photo Upload Area -->
+            <div class="bg-white p-6 rounded-2xl google-shadow border-t-4 border-g-blue">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-image text-blue-500 mr-2"></i> 1. 上傳照片
+                </h2>
+                <div class="flex items-center justify-center w-full">
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-blue-500 mb-2"></i>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">點擊上傳</span> 或拖曳照片至此</p>
+                        </div>
+                        <input id="dropzone-file" type="file" class="hidden" accept="image/*" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2. Message Area (Handwriting/Text/Voice) -->
+            <div class="bg-white p-6 rounded-2xl google-shadow border-t-4 border-g-red">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-bullhorn text-red-500 mr-2"></i> 2. 寫下你的口號
+                    </h2>
+                    <!-- Toggle Switch -->
+                    <div class="flex bg-gray-200 rounded-full p-1">
+                        <button id="mode-text" class="px-4 py-1 rounded-full text-sm font-bold bg-white text-gray-700 shadow-sm transition">打字</button>
+                        <button id="mode-draw" class="px-4 py-1 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition">手寫</button>
+                    </div>
+                </div>
+
+                <!-- Text Input Mode -->
+                <div id="input-text-area" class="space-y-3">
+                    <div class="relative">
+                        <textarea id="message-text" rows="3" class="block p-4 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="輸入保護動物口號 (例如: Be Kind to Animals!)"></textarea>
+                        <button id="mic-btn" class="absolute bottom-3 right-3 bg-white p-2 rounded-full shadow hover:bg-gray-100 text-gray-600 transition" title="語音輸入">
+                            <i class="fas fa-microphone text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="flex justify-between items-center">
+                         <p id="mic-status" class="text-xs text-red-500 h-4"></p>
+                         
+                         <!-- Position Controls -->
+                         <div class="flex items-center space-x-2 text-sm text-gray-600 bg-gray-100 p-1 rounded-lg">
+                             <span class="px-2">文字位置:</span>
+                             <button onclick="setTextPosition('top')" class="pos-btn p-1 px-3 rounded hover:bg-white hover:shadow transition" id="btn-pos-top">上</button>
+                             <button onclick="setTextPosition('center')" class="pos-btn p-1 px-3 rounded bg-white shadow font-bold text-blue-600 transition" id="btn-pos-center">中</button>
+                             <button onclick="setTextPosition('bottom')" class="pos-btn p-1 px-3 rounded hover:bg-white hover:shadow transition" id="btn-pos-bottom">下</button>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Drawing Input Mode -->
+                <div id="input-draw-area" class="hidden space-y-3">
+                    <div class="border-2 border-gray-300 rounded-lg bg-white overflow-hidden relative cursor-crosshair" style="height: 200px;">
+                        <canvas id="drawing-canvas" class="w-full h-full"></canvas>
+                        <div class="absolute top-2 right-2 flex space-x-2">
+                             <button onclick="clearCanvas()" class="bg-white p-1 rounded shadow text-xs text-red-500 border border-gray-200">清除</button>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 items-center text-sm">
+                        <span>筆刷顏色:</span>
+                        <button onclick="setPenColor('#000000')" class="w-6 h-6 rounded-full bg-black border border-gray-300"></button>
+                        <button onclick="setPenColor('#ffffff')" class="w-6 h-6 rounded-full bg-white border border-gray-300"></button>
+                        <button onclick="setPenColor('#EA4335')" class="w-6 h-6 rounded-full bg-red-500"></button>
+                        <button onclick="setPenColor('#FBBC05')" class="w-6 h-6 rounded-full bg-yellow-400"></button>
+                        <button onclick="setPenColor('#34A853')" class="w-6 h-6 rounded-full bg-green-500"></button>
+                        <button onclick="setPenColor('#4285F4')" class="w-6 h-6 rounded-full bg-blue-500"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Frame Selection -->
+            <div class="bg-white p-6 rounded-2xl google-shadow border-t-4 border-g-yellow">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-crop-alt text-yellow-500 mr-2"></i> 3. 選擇社群框
+                </h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <button onclick="setFrame('fb')" class="frame-btn flex flex-col items-center p-3 border-2 rounded-lg hover:bg-blue-50 border-blue-500 bg-blue-50 transition">
+                        <i class="fab fa-facebook text-2xl text-blue-600 mb-2"></i>
+                        <span class="text-xs font-bold">Facebook</span>
+                    </button>
+                    <button onclick="setFrame('ig')" class="frame-btn flex flex-col items-center p-3 border-2 border-gray-200 rounded-lg hover:bg-pink-50 transition">
+                        <i class="fab fa-instagram text-2xl text-pink-600 mb-2"></i>
+                        <span class="text-xs font-bold">Instagram</span>
+                    </button>
+                    <button onclick="setFrame('threads')" class="frame-btn flex flex-col items-center p-3 border-2 border-gray-200 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-brands fa-threads text-2xl text-black mb-2"></i>
+                        <span class="text-xs font-bold">Threads</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Download Button -->
+            <button onclick="downloadImage()" class="w-full py-4 bg-g-green text-white text-xl font-bold rounded-xl shadow-lg hover:bg-green-600 transform hover:scale-[1.02] transition flex items-center justify-center">
+                <i class="fas fa-download mr-3"></i> 下載完成圖
+                <div class="loader ml-3" id="loading-spinner"></div>
+            </button>
+
+        </div>
+
+        <!-- Right Column: Live Preview -->
+        <div class="flex flex-col items-center sticky top-4">
+            <h2 class="text-xl font-bold mb-4 text-gray-700">即時預覽</h2>
+            
+            <!-- The Capture Area -->
+            <div id="capture-container" class="w-full max-w-[500px] bg-white p-4 rounded-xl shadow-2xl border border-gray-200">
+                <!-- User Profile Header (Mockup) -->
+                <div class="flex items-center mb-3 px-1">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-lg mr-3 overflow-hidden border border-green-200">
+                         <i class="fas fa-paw"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm text-gray-800">Animal Protector</div>
+                        <div class="text-xs text-gray-500">Just now • 🌳</div>
+                    </div>
+                    <div class="ml-auto text-gray-400"><i class="fas fa-ellipsis-h"></i></div>
+                </div>
+
+                <!-- The Actual Content to Screenshot -->
+                <div id="final-preview" class="preview-container frame-fb w-full relative bg-gray-100 rounded-lg border border-gray-200">
+                    
+                    <!-- Background Image -->
+                    <img id="preview-img" class="w-full h-full object-cover absolute top-0 left-0 z-0" src="" style="display:none;">
+                    <div id="preview-placeholder" class="w-full h-full absolute top-0 left-0 z-0 flex items-center justify-center text-gray-400 bg-gray-100 flex-col">
+                        <i class="fas fa-camera text-4xl mb-2 text-gray-300"></i>
+                        <span class="text-lg">請上傳照片</span>
+                    </div>
+
+                    <!-- Updated Hashtag -->
+                    <div class="hashtag-sticker">#20260122iloveanimals</div>
+
+                    <!-- Decorations (SVG) -->
+                    <!-- Top Left: Tree -->
+                    <svg class="decor-top-left" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <!-- Trunk -->
+                        <path d="M45 60 L45 90 L55 90 L55 60 Z" fill="#8B4513" stroke="#5D4037" stroke-width="2"/>
+                        <!-- Leaves (Simple stylized tree) -->
+                        <circle cx="50" cy="45" r="30" fill="#34A853" stroke="#2E7D32" stroke-width="2"/>
+                        <circle cx="35" cy="55" r="15" fill="#4CAF50" opacity="0.8"/>
+                        <circle cx="65" cy="55" r="15" fill="#4CAF50" opacity="0.8"/>
+                        <circle cx="50" cy="25" r="15" fill="#66BB6A" opacity="0.8"/>
+                    </svg>
+
+                    <!-- Bottom Right: Cute Animal (Dog/Bear Face) -->
+                    <svg class="decor-bottom-right" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Ears -->
+                        <circle cx="25" cy="35" r="12" fill="#FBBC05" stroke="#F57F17" stroke-width="2"/>
+                        <circle cx="75" cy="35" r="12" fill="#FBBC05" stroke="#F57F17" stroke-width="2"/>
+                        <!-- Face -->
+                        <ellipse cx="50" cy="55" rx="35" ry="30" fill="#FBBC05" stroke="#F57F17" stroke-width="2"/>
+                        <!-- Eyes -->
+                        <circle cx="40" cy="50" r="4" fill="#333"/>
+                        <circle cx="60" cy="50" r="4" fill="#333"/>
+                        <!-- Nose -->
+                        <ellipse cx="50" cy="60" rx="6" ry="4" fill="#5D4037"/>
+                        <!-- Mouth -->
+                        <path d="M50 64 Q40 70 50 75 Q60 70 50 64" fill="#FF8A80"/>
+                    </svg>
+
+                    <!-- User Handwriting Layer -->
+                    <img id="preview-handwriting" class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none" style="display:none;">
+
+                    <!-- User Text Layer -->
+                    <div id="preview-text" class="overlay-text hidden" data-position="center"></div>
+                </div>
+
+                <!-- Footer Mockup -->
+                <div class="flex mt-3 px-1 text-2xl text-gray-700 space-x-4">
+                    <i class="far fa-heart hover:text-red-500 cursor-pointer"></i>
+                    <i class="far fa-comment cursor-pointer"></i>
+                    <i class="far fa-paper-plane cursor-pointer"></i>
+                    <div class="ml-auto"><i class="far fa-bookmark cursor-pointer"></i></div>
+                </div>
+                <div class="mt-2 px-1 text-sm font-bold text-gray-800">12,345 likes</div>
+                <div class="px-1 text-sm text-gray-800"><span class="font-bold">Animal Protector</span> <span id="caption-preview-text"></span></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Variables ---
+        const dropzone = document.getElementById('dropzone-file');
+        const previewImg = document.getElementById('preview-img');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        
+        const messageText = document.getElementById('message-text');
+        const previewTextDiv = document.getElementById('preview-text');
+        const captionPreview = document.getElementById('caption-preview-text');
+        
+        const modeTextBtn = document.getElementById('mode-text');
+        const modeDrawBtn = document.getElementById('mode-draw');
+        const inputTextContainer = document.getElementById('input-text-area');
+        const inputDrawContainer = document.getElementById('input-draw-area');
+        
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const previewHandwritingImg = document.getElementById('preview-handwriting');
+
+        const finalPreview = document.getElementById('final-preview');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let currentMode = 'text'; // 'text' or 'draw'
+        let penColor = '#000000';
+
+        // --- Initialization ---
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        }
+
+        function resizeCanvas() {
+            // Make canvas match its display size resolution
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        init();
+
+        // --- 1. Image Upload Logic ---
+        dropzone.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                    previewPlaceholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- 2. Mode Switching ---
+        modeTextBtn.addEventListener('click', () => switchMode('text'));
+        modeDrawBtn.addEventListener('click', () => switchMode('draw'));
+
+        function switchMode(mode) {
+            currentMode = mode;
+            if (mode === 'text') {
+                modeTextBtn.className = "px-4 py-1 rounded-full text-sm font-bold bg-white text-gray-700 shadow-sm transition";
+                modeTextBtn.classList.remove('text-gray-500');
+                
+                modeDrawBtn.className = "px-4 py-1 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition";
+                
+                inputTextContainer.classList.remove('hidden');
+                inputDrawContainer.classList.add('hidden');
+                
+                previewTextDiv.classList.remove('hidden');
+                previewHandwritingImg.style.display = 'none';
+            } else {
+                modeDrawBtn.className = "px-4 py-1 rounded-full text-sm font-bold bg-white text-gray-700 shadow-sm transition";
+                modeDrawBtn.classList.remove('text-gray-500');
+                
+                modeTextBtn.className = "px-4 py-1 rounded-full text-sm font-bold text-gray-500 hover:text-gray-700 transition";
+                
+                inputDrawContainer.classList.remove('hidden');
+                inputTextContainer.classList.add('hidden');
+                
+                // Trigger resize again to be safe when unhiding
+                resizeCanvas();
+                
+                previewTextDiv.classList.add('hidden');
+                previewHandwritingImg.style.display = 'block';
+                updateHandwritingPreview();
+            }
+        }
+
+        // --- 3. Text & Voice Logic ---
+        messageText.addEventListener('input', (e) => {
+            previewTextDiv.innerText = e.target.value;
+            // Also update the caption below the post for fun
+            captionPreview.innerText = e.target.value.substring(0, 50) + (e.target.value.length > 50 ? '...' : '');
+        });
+
+        // Voice Recognition
+        const micBtn = document.getElementById('mic-btn');
+        const micStatus = document.getElementById('mic-status');
+        
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US'; // Changed to English for English Homework context, or keep zh-TW if mixed
+
+            micBtn.addEventListener('click', () => {
+                recognition.start();
+                micStatus.innerText = "Listening...";
+                micBtn.classList.add('text-red-500');
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageText.value += transcript;
+                // Trigger input event manually
+                messageText.dispatchEvent(new Event('input'));
+                micStatus.innerText = "";
+                micBtn.classList.remove('text-red-500');
+            };
+
+            recognition.onerror = (event) => {
+                micStatus.innerText = "Error. Try again.";
+                micBtn.classList.remove('text-red-500');
+            };
+            
+            recognition.onend = () => {
+                 micStatus.innerText = "";
+                 micBtn.classList.remove('text-red-500');
+            };
+        } else {
+            micBtn.style.display = 'none'; // Hide if not supported
+        }
+
+        // --- New: Text Position Logic ---
+        function setTextPosition(pos) {
+            previewTextDiv.setAttribute('data-position', pos);
+            
+            // Reset button styles
+            document.querySelectorAll('.pos-btn').forEach(btn => {
+                btn.className = "pos-btn p-1 px-3 rounded hover:bg-white hover:shadow transition";
+                btn.classList.remove('bg-white', 'shadow', 'font-bold', 'text-blue-600');
+            });
+
+            // Set active button style
+            const activeBtn = document.getElementById(`btn-pos-${pos}`);
+            activeBtn.classList.add('bg-white', 'shadow', 'font-bold', 'text-blue-600');
+            activeBtn.classList.remove('hover:bg-white', 'hover:shadow');
+        }
+
+        // --- 4. Canvas Drawing Logic ---
+        function getPos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (evt.clientX || evt.touches[0].clientX) - rect.left;
+            const y = (evt.clientY || evt.touches[0].clientY) - rect.top;
+            return { x, y };
+        }
+
+        function startDraw(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getPos(canvas, e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPos(canvas, e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function endDraw() {
+            if (isDrawing) {
+                isDrawing = false;
+                updateHandwritingPreview();
+            }
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mouseout', endDraw);
+
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', endDraw);
+
+        function setPenColor(color) {
+            penColor = color;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateHandwritingPreview();
+        }
+
+        function updateHandwritingPreview() {
+            // Convert canvas to data URL and set it as src for the preview overlay
+            const dataUrl = canvas.toDataURL();
+            previewHandwritingImg.src = dataUrl;
+        }
+
+        // --- 5. Frame Selection Logic ---
+        function setFrame(type) {
+            // Reset active styles on buttons
+            document.querySelectorAll('.frame-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'border-blue-500', 'bg-pink-50', 'bg-gray-100');
+                btn.classList.add('border-gray-200');
+            });
+            
+            // Set styles for preview
+            finalPreview.classList.remove('frame-fb', 'frame-ig', 'frame-threads');
+            
+            const targetBtn = event.currentTarget;
+            targetBtn.classList.remove('border-gray-200');
+            
+            if (type === 'fb') {
+                finalPreview.classList.add('frame-fb');
+                targetBtn.classList.add('bg-blue-50', 'border-blue-500');
+            } else if (type === 'ig') {
+                finalPreview.classList.add('frame-ig');
+                targetBtn.classList.add('bg-pink-50', 'border-pink-500');
+            } else if (type === 'threads') {
+                finalPreview.classList.add('frame-threads');
+                targetBtn.classList.add('bg-gray-100', 'border-black');
+            }
+        }
+
+        // --- 6. Download Logic ---
+        function downloadImage() {
+            const container = document.getElementById('capture-container');
+            const btn = document.querySelector('button[onclick="downloadImage()"]');
+            const spinner = document.getElementById('loading-spinner');
+            
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            html2canvas(container, {
+                scale: 2, // High resolution
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Stop_Animal_Abuse_Poster.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }).catch(err => {
+                console.error("Capture failed:", err);
+                alert("圖片生成失敗，請重試！");
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
